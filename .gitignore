@@ -1,0 +1,14 @@
+#VS Code
+.vscode
+
+# modulos
+#
+node_modules/
+
+# build
+#
+dist/
+
+# cache
+#
+.cache
