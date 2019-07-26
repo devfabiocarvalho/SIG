@@ -7,31 +7,38 @@ import { Tile as TileLayer, Vector as VectorLayer } from 'ol/layer.js'
 import { OSM, Vector as VectorSource } from 'ol/source.js'
 import { Fill, Stroke, Text, Style } from 'ol/style.js'
 import converter from './utils/ajusteCoordenadaGeoJson'
-import {indicadores} from './data/indicadores'
 var d3 = require("d3");
 
-$(document).ready(function(){
+$(document).ready(function () {
+
+    loadTipoIndicador();
+
     $('#indicador').change(() => {
         setIndicador($('#indicador').val())
     })
 })
 
+const loadTipoIndicador = () => {
+    $.getJSON("http://sig-itv.herokuapp.com/api/tipoindicador", function (retorno) {
+        var options = $("#indicador");
+        $.each(retorno.data, function (index, data) {
+            options.append(new Option(data.nome, data.id));
+        });
+    });
+}
+
 const setIndicador = (tipoIndicador) => {
-    const indicador = tipoIndicador=='1'?'Indicador A':'Indicador B'
-    const indicadoresSelecionado = indicadores.filter(i => i.indicador == indicador)
-    indicadoresSelecionado.forEach(i => {
-        const feature = vectorLayer.getSource().getFeatureById(i.geocodigo_municipio)
-        setStyleFeature(feature, i)
+    $.getJSON(`https://sig-itv.herokuapp.com/api/indicador/${tipoIndicador}`, function (retorno) {
+        $.each(retorno.data, function (index, data) {
+            const feature = vectorLayer.getSource().getFeatureById(data.municipio.geocodigo)
+            setStyleFeature(feature, data.valor)
+        });
     });
 }
 
 const setStyleFeature = (feature, indicador) => {
-
-    console.log(indicador.valor)
-    // const color = d3.interpolateRdYlGn(indicador.valor)
-    // var colorScale = d3.scale.linear().range(["green", "yellow", "red"]).domain([0, 1])
-    var colorScale = d3.scaleLinear().domain([0, 0.5, 1]).range(["green", "yellow", "red"]); 
-    const color = colorScale(indicador.valor)
+    var colorScale = d3.scaleLinear().domain([0, 0.5, 1]).range(["green", "yellow", "red"]);
+    const color = colorScale(indicador)
 
     feature.setStyle(
         new Style({
@@ -47,15 +54,15 @@ const setStyleFeature = (feature, indicador) => {
                 font: '10px Calibri,sans-serif',
                 textAlign: 'top',
                 fill: new Fill({
-                  color: '#000'
+                    color: '#000'
                 }),
                 stroke: new Stroke({
-                  color: '#000',
-                  width: 0.3
+                    color: '#000',
+                    width: 0.3
                 }),
                 text: `${feature.values_.NOME} - ${feature.values_.UF}`
             })
-          })
+        })
     )
 }
 
@@ -69,16 +76,16 @@ var styles = {
             color: 'rgba(255, 255, 0, 0.1)'
         }),
         text: new Text({
-          overflow: true,
-          font: '10px Calibri,sans-serif',
-          textAlign: 'top',
-          fill: new Fill({
-            color: '#000'
-          }),
-          stroke: new Stroke({
-            color: '#000',
-            width: 0.3
-          })
+            overflow: true,
+            font: '10px Calibri,sans-serif',
+            textAlign: 'top',
+            fill: new Fill({
+                color: '#000'
+            }),
+            stroke: new Stroke({
+                color: '#000',
+                width: 0.3
+            })
         })
     })
 };
