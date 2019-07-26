@@ -28,52 +28,32 @@ const loadTipoIndicador = () => {
 }
 
 const setIndicador = (tipoIndicador) => {
-    $.getJSON(`https://sig-itv.herokuapp.com/api/indicador/${tipoIndicador}`, function (retorno) {
-        $.each(retorno.data, function (index, data) {
-            const feature = vectorLayer.getSource().getFeatureById(data.municipio.geocodigo)
-            setStyleFeature(feature, data.valor)
-        });
-    });
-}
-
-const setStyleFeature = (feature, indicador) => {
-    var colorScale = d3.scaleLinear().domain([0, 0.5, 1]).range(["green", "yellow", "red"]);
-    const color = colorScale(indicador)
-
-    feature.setStyle(
-        new Style({
-            stroke: new Stroke({
-                color: '#000',
-                width: 0.8
-            }),
-            fill: new Fill({
-                color
-            }),
-            text: new Text({
-                overflow: true,
-                font: '10px Calibri,sans-serif',
-                textAlign: 'top',
-                fill: new Fill({
-                    color: '#000'
-                }),
-                stroke: new Stroke({
-                    color: '#000',
-                    width: 0.3
-                }),
-                text: `${feature.values_.NOME} - ${feature.values_.UF}`
-            })
+    { tipoIndicador == 0 ?
+        
+        vectorLayer.getSource().getFeatures().forEach(f => {
+            f.setStyle(getStyles(f, 'rgba(255, 255, 0, 0.1)'))
         })
-    )
+        
+        :
+
+        $.getJSON(`https://sig-itv.herokuapp.com/api/indicador/${tipoIndicador}`, function (retorno) {
+            $.each(retorno.data, function (index, data) {
+                const feature = vectorLayer.getSource().getFeatureById(data.municipio.geocodigo)
+                var colorScale = d3.scaleLinear().domain([0, 0.5, 1]).range(["green", "yellow", "red"]);
+                feature.setStyle(getStyles(feature, colorScale(data.valor)))
+            });
+        });
+    }
 }
 
-var styles = {
-    'MultiPolygon': new Style({
+const getStyles = (feature, color) => {
+    return new Style({
         stroke: new Stroke({
-            color: 'black',
-            width: 0.5
+            color: '#000',
+            width: 0.8
         }),
         fill: new Fill({
-            color: 'rgba(255, 255, 0, 0.1)'
+            color
         }),
         text: new Text({
             overflow: true,
@@ -85,24 +65,21 @@ var styles = {
             stroke: new Stroke({
                 color: '#000',
                 width: 0.3
-            })
+            }),
+            text: `${feature.values_.NOME} - ${feature.values_.UF}`
         })
     })
-};
+}
 
-var styleFunction = function (feature) {
-    let style = styles[feature.getGeometry().getType()];
-    style.getText().text_ = `${feature.get('NOME')} - ${feature.get('UF')}`
-    return style;
-};
 
 var vectorSource = new VectorSource({
-    // url: 'https://openlayers.org/en/v4.6.5/examples/data/geojson/countries.geojson',
-    //format: new GeoJSON()
-
     // features: (new GeoJSON()).readFeatures(require('./municipios').municipios)
     features: (new GeoJSON()).readFeatures(converter())
 });
+
+var styleFunction = function (feature) {
+    return getStyles(feature, 'rgba(255, 255, 0, 0.1)');
+};
 
 var vectorLayer = new VectorLayer({
     source: vectorSource,

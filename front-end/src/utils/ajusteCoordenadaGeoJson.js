@@ -1,10 +1,5 @@
-// import $ from "jquery";
 import { municipios } from '../data/municipios'
 import { fromLonLat } from 'ol/proj.js';
-
-// $.get("./municipios.json", function(json) {
-//     console.log(json); // this will show the info it in firebug console
-// });
 
 export default function converter() {
     var features = []
@@ -33,13 +28,6 @@ export default function converter() {
             }
         },
         features
-        // 'features': [{
-        //     'type': 'Feature',
-        //     'geometry': {
-        //         'type': 'MultiPolygon',
-        //         'coordinates': [newCoordenadas]
-        //     }
-        // }]
     }
 
     return geojson
