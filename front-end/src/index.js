@@ -9,6 +9,9 @@ import { Fill, Stroke, Text, Style } from 'ol/style.js'
 import converter from './utils/ajusteCoordenadaGeoJson'
 var d3 = require("d3");
 
+const serverUrl = "http://sig-itv.herokuapp.com"
+// const serverUrl = "http://localhost:8080"
+
 $(document).ready(function () {
 
     loadTipoIndicador();
@@ -19,7 +22,7 @@ $(document).ready(function () {
 })
 
 const loadTipoIndicador = () => {
-    $.getJSON("http://sig-itv.herokuapp.com/api/tipoindicador", function (retorno) {
+    $.getJSON(`${serverUrl}/api/tipoindicador`, function (retorno) {
         var options = $("#indicador");
         $.each(retorno.data, function (index, data) {
             options.append(new Option(data.nome, data.id));
@@ -36,7 +39,7 @@ const setIndicador = (tipoIndicador) => {
         
         :
 
-        $.getJSON(`https://sig-itv.herokuapp.com/api/indicador/${tipoIndicador}`, function (retorno) {
+        $.getJSON(`${serverUrl}/api/indicador/${tipoIndicador}`, function (retorno) {
             $.each(retorno.data, function (index, data) {
                 const feature = vectorLayer.getSource().getFeatureById(data.municipio.geocodigo)
                 var colorScale = d3.scaleLinear().domain([0, 0.5, 1]).range(["green", "yellow", "red"]);
