@@ -90,7 +90,7 @@ var styleFunction = function (feature) {
 };
 
 var vectorSource = new VectorSource({
-    // url: 'https://openlayers.org/en/v4.6.5/examples/data/geojson/countries.geojson',]
+    // url: 'https://openlayers.org/en/v4.6.5/examples/data/geojson/countries.geojson',
     //format: new GeoJSON()
 
     // features: (new GeoJSON()).readFeatures(require('./municipios').municipios)
