@@ -9,7 +9,7 @@ import { Fill, Stroke, Text, Style } from 'ol/style.js'
 import converter from './utils/ajusteCoordenadaGeoJson'
 var d3 = require("d3");
 
-const serverUrl = "http://sig-itv.herokuapp.com"
+const serverUrl = "https://sig-itv.herokuapp.com"
 // const serverUrl = "http://localhost:8080"
 
 $(document).ready(function () {
